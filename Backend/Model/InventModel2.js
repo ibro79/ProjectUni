@@ -34,7 +34,8 @@ const inventSchema2 = mongoose.Schema(
     TotalQuantity: {
       type: Number,
       default: 0, 
-    }
+    },
+    ShopName: { type: String, required: true }, // Add ShopName
   },
   {
     timestamps: true,

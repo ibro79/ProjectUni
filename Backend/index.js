@@ -1,9 +1,8 @@
 import express from 'express';
 import { PORT, mongoDBURL } from './config.js';
 import mongoose from 'mongoose';
-import RoutaInvent from './Routy/RoutaInvent.js';
 import RoutaInvent2 from './Routy/RoutaInvent2.js';
-import Allinvent from './Routy/Allinvent.js';
+import RoutaShops from './Routy/RoutaShops.js';
 import cors from 'cors';
 
 
@@ -18,9 +17,8 @@ app.get('/', (request, response) => {
     return response.status(234).send('Invent Backend Sytem is running!');
 });
 
-app.use("/inventory", RoutaInvent);
-app.use("/inventory2", RoutaInvent2);
-app.use("/allinventory", Allinvent);
+app.use("/inventory", RoutaInvent2);
+app.use("/shops", RoutaShops);
 
 mongoose
   .connect(mongoDBURL)

@@ -1,9 +1,9 @@
 import express from "express";
 import { Inventura2 } from "../Model/InventModel2.js";
+import { Shops } from "../Model/ShopsModel.js";
 
 const router = express.Router();
    
-
 router.post("/", async (request, response) => {
   try {
     if (!request.body.Sku || !request.body.Brand || !request.body.Price || !request.body.Quantity || !request.body.Category) {
@@ -11,12 +11,27 @@ router.post("/", async (request, response) => {
         message: "Please fill in all fields",
       });
     }
+
+    // Check if the shop name exists
+    const shop = await Shops.findOne({ ShopName: request.body.ShopName });
+    if (!shop) {
+      return response.status(400).send({
+        message: "Invalid ShopName",
+      });
+    }
+
+    // Calculate the TotalQuantity
+    const TotalQuantity = (request.body.Quantity || 0) - (request.body.Sales || 0);
+
     const NewInventory = {
       Sku: request.body.Sku,
       Brand: request.body.Brand,
       Price: request.body.Price,
       Quantity: request.body.Quantity,
       Category: request.body.Category,
+      ShopName: request.body.ShopName,
+      TotalQuantity: TotalQuantity,
+      SalesInTotal: request.body.Sales || 0,
     };
 
     const newinventura = await Inventura2.create(NewInventory);
@@ -27,6 +42,8 @@ router.post("/", async (request, response) => {
     response.status(500).send({ message: error.message });
   }
 });
+
+
 
 //zde ziskame vsechny inventury
 router.get("/", async (request, response) => {
@@ -57,7 +74,6 @@ router.get("/:id", async (request, response) => {
   }
 });
 
-//routa pro aktualizaci inventury
 router.put("/:id", async (request, response) => {
   try {
     const { id } = request.params;
@@ -85,8 +101,8 @@ router.put("/:id", async (request, response) => {
         return response.status(400).json({ message: "Invalid Sales value" });
       }
       const currentSales = Number(request.body.Sales);
-      newSalesInTotal += currentSales; 
-      newTotalQuantity -= currentSales; 
+      newSalesInTotal += currentSales; // Adjust total sales
+      newTotalQuantity -= currentSales; // Deduct sales from total quantity
       if (newTotalQuantity < 0) {
         return response.status(400).json({ message: "Sales cannot exceed TotalQuantity" });
       }
@@ -105,6 +121,7 @@ router.put("/:id", async (request, response) => {
     response.status(500).send({ message: error.message });
   }
 });
+
 
 
 
