@@ -7,3 +7,5 @@ const ShowInventory = () => {
 }
 
 export default ShowInventory
+
+//NECHCI TO MIT 
