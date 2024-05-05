@@ -1,56 +1,70 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Report = () => {
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [shop, setShop] = useState("");
-  const [inventoryData, setInventoryData] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [reportData, setReportData] = useState([]);
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("/api/inventory", {
-        params: { shop, fromDate, toDate },
-      });
-      setInventoryData(response.data.data);
+      const fromDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 0, 0, 0);
+      const toDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 23, 59, 59);
+
+      const response = await axios.get(`http://localhost:5555/inventory?fromDate=${fromDate.toISOString()}&toDate=${toDate.toISOString()}`);
+
+      if (Array.isArray(response.data.data)) {
+        setReportData(response.data.data);
+      } else {
+        console.error('Response data is not an array:', response.data);
+      }
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Error fetching report data:', error);
     }
   };
 
+  useEffect(() => {
+    fetchData();
+  }, [selectedDate]);
+
   return (
-    <div>
-      <h2>Inventory Report</h2>
-      <div>
-        <label htmlFor="fromDate">From:</label>
+    <div className="p-4">
+      <h1 className="text-3xl mb-4">Inventory Report</h1>
+      <div className="flex items-center mb-4">
+        <label htmlFor="datePicker" className="mr-4 text-gray-500">Select Date:</label>
         <input
           type="date"
-          id="fromDate"
-          value={fromDate}
-          onChange={(e) => setFromDate(e.target.value)}
+          id="datePicker"
+          value={selectedDate.toISOString().split('T')[0]}
+          onChange={(e) => setSelectedDate(new Date(e.target.value))}
+          className="border-2 border-gray-500 px-4 py-2"
         />
-        <label htmlFor="toDate">To:</label>
-        <input
-          type="date"
-          id="toDate"
-          value={toDate}
-          onChange={(e) => setToDate(e.target.value)}
-        />
-        <label htmlFor="shop">Shop:</label>
-        <input
-          type="text"
-          id="shop"
-          value={shop}
-          onChange={(e) => setShop(e.target.value)}
-        />
-        <button onClick={fetchData}>Fetch Data</button>
       </div>
       <div>
-        <h3>Inventory Items</h3>
+        <h2 className="text-2xl mb-2">Report for {selectedDate.toDateString()}</h2>
         <ul>
-          {inventoryData.map((item) => (
-            <li key={item._id}>
-              SKU: {item.Sku}, Brand: {item.Brand}, Price: {item.Price}, Quantity: {item.Quantity}
+          {reportData.map((item, index) => (
+            <li key={index} className="border-b-2 border-gray-300 py-2">
+              <div>
+                <span className="font-bold">SKU:</span> {item.Sku}
+              </div>
+              <div>
+                <span className="font-bold">Brand:</span> {item.Brand}
+              </div>
+              <div>
+                <span className="font-bold">Price:</span> {item.Price}
+              </div>
+              <div>
+                <span className="font-bold">Quantity:</span> {item.Quantity}
+              </div>
+              <div>
+                <span className="font-bold">Sales:</span> {item.Sales}
+              </div>
+              <div>
+                <span className="font-bold">Category:</span> {item.Category}
+              </div>
+              <div>
+                <span className="font-bold">Shop Name:</span> {item.ShopName}
+              </div>
             </li>
           ))}
         </ul>
