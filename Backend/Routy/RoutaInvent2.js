@@ -7,7 +7,7 @@ const router = express.Router();
 // POST route to create new inventory items
 router.post("/", async (request, response) => {
   try {
-    if (!request.body.Sku || !request.body.Brand || !request.body.Price || !request.body.Quantity || !request.body.Category) {
+    if (!request.body.Sku || !request.body.Brand || !request.body.Price || !request.body.Quantity || !request.body.Category ) {
       return response.status(400).send({
         message: "Please fill in all fields",
       });
@@ -33,6 +33,7 @@ router.post("/", async (request, response) => {
       ShopName: request.body.ShopName,
       TotalQuantity: TotalQuantity,
       SalesInTotal: request.body.Sales || 0,
+      CreatedTime: request.body.CreatedTime,
     };
 
     const newinventura = await Inventura2.create(NewInventory);
@@ -49,6 +50,23 @@ router.get("/", async (request, response) => {
   try {
     const { shop } = request.query;
     const filter = shop ? { ShopName: shop } : {}; // Apply filter if shop parameter is provided
+
+    const inventura = await Inventura2.find(filter);
+
+    return response.status(200).json({
+      count: inventura.length,
+      data: inventura,
+    });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
+});
+// GET route to fetch inventory items
+router.get("/filterbytime", async (request, response) => {
+  try {
+    const { Time } = request.query;
+    const filter =  { CreatedTime: Time }; // Apply filter if shop parameter is provided
 
     const inventura = await Inventura2.find(filter);
 

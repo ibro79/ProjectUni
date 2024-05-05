@@ -35,7 +35,14 @@ const inventSchema2 = mongoose.Schema(
       default: 0, 
     },
     ShopName: { type: String, required: true }, // Add ShopName
+    
+    CreatedTime: {
+      type: String,
+      required: true,
+    }
   },
+
+  
   {
     timestamps: true,
   }
