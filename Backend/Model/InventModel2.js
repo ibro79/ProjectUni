@@ -20,7 +20,6 @@ const inventSchema2 = mongoose.Schema(
     },
     Category: {
       type: String,
-      enum: ["Suitcases", "HandBags", "Wallets", "Backpacks", "Accessories"], 
       required: true,
     },
     Sales: {

@@ -14,6 +14,7 @@ const CreateInventory = () => {
   const [ShopName, setShopName] = useState('');
   const [loading, setLoading] = useState(false);
   const [shopNames, setShopNames] = useState([]);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
   // Fetch shop names from the backend on component mount
@@ -31,7 +32,21 @@ const CreateInventory = () => {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:5555/category');
+        if (Array.isArray(response.data.data)) {
+          setCategories(response.data.data.map(cat => cat.Category));
+        } else {
+          console.error('Response data is not an array:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
     fetchShopNames();
+    fetchCategories();
   }, []);
 
   const InventorySave = () => {
@@ -49,7 +64,7 @@ const CreateInventory = () => {
       .post('http://localhost:5555/inventory', data)
       .then(() => {
         setLoading(false);
-        navigate('/');
+        navigate('/inventory');
       })
       .catch((error) => {
         setLoading(false);
@@ -93,12 +108,16 @@ const CreateInventory = () => {
         </div>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Category</label>
-          <input
-            type='text'
+          <select
             value={Category}
             onChange={(e) => setCategory(e.target.value)}
             className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
+          >
+            <option value='' disabled>Select Category</option>
+            {categories.map((cat, index) => (
+              <option key={index} value={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Shop Name</label>

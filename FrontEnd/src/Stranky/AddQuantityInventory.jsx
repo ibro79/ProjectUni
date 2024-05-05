@@ -14,7 +14,7 @@ const AddQuantityInventory = () => {
     setLoading(true);
     axios.get(`http://localhost:5555/inventory/${id}`)
       .then((response) => {
-        setQuantity(response.data.quantity); // Assuming your API response contains quantity
+        setQuantity(response.data.Quantity); // Make sure to access the correct property
         setLoading(false);
       })
       .catch((error) => {
@@ -27,10 +27,10 @@ const AddQuantityInventory = () => {
   const handleSave = () => {
     setLoading(true);
     axios
-      .put(`http://localhost:5555/inventory/${id}`, { quantity })
+      .put(`http://localhost:5555/inventory/${id}`, { Quantity: quantity }) // Pass the correct property name
       .then(() => {
         setLoading(false);
-        navigate('/');
+        navigate('/inventory');
       })
       .catch((error) => {
         setLoading(false);

@@ -14,7 +14,7 @@ const DeleteInventory = () => {
       .delete(`http://localhost:5555/inventory/${id}`)
       .then(() => {
         setLoading(false);
-        navigate('/');
+        navigate('/inventory');
       })
       .catch((error) => {
         setLoading(false);

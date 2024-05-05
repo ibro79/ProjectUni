@@ -3,7 +3,8 @@ import { Inventura2 } from "../Model/InventModel2.js";
 import { Shops } from "../Model/ShopsModel.js";
 
 const router = express.Router();
-   
+
+// POST route to create new inventory items
 router.post("/", async (request, response) => {
   try {
     if (!request.body.Sku || !request.body.Brand || !request.body.Price || !request.body.Quantity || !request.body.Category) {
@@ -43,15 +44,16 @@ router.post("/", async (request, response) => {
   }
 });
 
-
-
-//zde ziskame vsechny inventury
+// GET route to fetch inventory items
 router.get("/", async (request, response) => {
   try {
-    const inventura = await Inventura2.find({});
+    const { shop } = request.query;
+    const filter = shop ? { ShopName: shop } : {}; // Apply filter if shop parameter is provided
+
+    const inventura = await Inventura2.find(filter);
 
     return response.status(200).json({
-      count: Inventura2.length,
+      count: inventura.length,
       data: inventura,
     });
   } catch (error) {
@@ -60,12 +62,12 @@ router.get("/", async (request, response) => {
   }
 });
 
-//zde ziskame inventuru podle ID
+// GET route to fetch inventory item by ID
 router.get("/:id", async (request, response) => {
   try {
     const { id } = request.params;
 
-    const inventura = await Inventura2.find({});
+    const inventura = await Inventura2.findById(id);
 
     return response.status(200).json(inventura);
   } catch (error) {
@@ -74,6 +76,7 @@ router.get("/:id", async (request, response) => {
   }
 });
 
+// PUT route to update inventory item
 router.put("/:id", async (request, response) => {
   try {
     const { id } = request.params;
@@ -122,10 +125,7 @@ router.put("/:id", async (request, response) => {
   }
 });
 
-
-
-
-//routa pro smazani inventury
+// DELETE route to delete inventory item
 router.delete("/:id", async (request, response) => {
   try {
     const { id } = request.params;
@@ -133,7 +133,7 @@ router.delete("/:id", async (request, response) => {
     const result = await Inventura2.findByIdAndDelete(id);
 
     if (!result) {
-      return response.status(404).json({ message: "Product not found" }); //nefunkcni
+      return response.status(404).json({ message: "Product not found" });
     }
 
     return response.status(200).send({ message: "Product deleted" });

@@ -3,8 +3,8 @@ import { PORT, mongoDBURL } from './config.js';
 import mongoose from 'mongoose';
 import RoutaInvent2 from './Routy/RoutaInvent2.js';
 import RoutaShops from './Routy/RoutaShops.js';
+import RoutaCategory from './Routy/RoutaCategory.js';
 import cors from 'cors';
-
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.get('/', (request, response) => {
 
 app.use("/inventory", RoutaInvent2);
 app.use("/shops", RoutaShops);
-
+app.use("/category", RoutaCategory);
 mongoose
   .connect(mongoDBURL)
   .then(() => {

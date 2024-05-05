@@ -10,36 +10,33 @@ const EditInventory = () => {
   const [Price, setPrice] = useState('');
   const [Quantity, setQuantity] = useState('');
   const [Category, setCategory] = useState('');
-  const [Sales, setSales] = useState('');
   const [ShopName, setShopName] = useState('');
   const [loading, setLoading] = useState(false);
   const [shopNames, setShopNames] = useState([]);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
 
   useEffect(() => {
-  setLoading(true);
-  axios.get(`http://localhost:5555/inventory/${id}`)  
-  .then((response) => {
-    setSku(response.data.Sku);
-    setBrand(response.data.Brand);
-    setPrice(response.data.Price);
-    setQuantity(response.data.Quantity);
-    setCategory(response.data.Category);
-    setSales(response.data.Sales);
-    setShopName(response.data.ShopName);
-    setLoading(false);
-  }).catch((error) => {
-    console.log(error);
-    setLoading(false);
-    alert('Something went wrong');
-    console.log(error);
-  });
-}, []);
-  
+    setLoading(true);
+    axios.get(`http://localhost:5555/inventory/${id}`)
+      .then((response) => {
+        const { Sku, Brand, Price, Quantity, Category, ShopName } = response.data;
+        setSku(Sku);
+        setBrand(Brand);
+        setPrice(Price);
+        setQuantity(Quantity);
+        setCategory(Category);
+        setShopName(ShopName);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+        alert('Something went wrong');
+      });
+  }, [id]);
 
-
-// Fetch shop names from the backend on component mount
   useEffect(() => {
     const fetchShopNames = async () => {
       try {
@@ -54,7 +51,21 @@ const EditInventory = () => {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:5555/category');
+        if (Array.isArray(response.data.data)) {
+          setCategories(response.data.data.map(cat => cat.Category));
+        } else {
+          console.error('Response data is not an array:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
     fetchShopNames();
+    fetchCategories();
   }, []);
 
   const InventoryEdit = () => {
@@ -64,15 +75,14 @@ const EditInventory = () => {
       Price,
       Quantity,
       Category,
-      Sales,
       ShopName,
     };
     setLoading(true);
     axios
-      .put('http://localhost:5555/inventory${id}', data)
+      .put(`http://localhost:5555/inventory/${id}`, data)
       .then(() => {
         setLoading(false);
-        navigate('/');
+        navigate('/inventory');
       })
       .catch((error) => {
         setLoading(false);
@@ -115,13 +125,26 @@ const EditInventory = () => {
           />
         </div>
         <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Category</label>
+          <label className='text-xl mr-4 text-gray-500'>Quantity</label>
           <input
             type='text'
+            value={Quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            className='border-2 border-gray-500 px-4 py-2 w-full'
+          />
+        </div>
+        <div className='my-4'>
+          <label className='text-xl mr-4 text-gray-500'>Category</label>
+          <select
             value={Category}
             onChange={(e) => setCategory(e.target.value)}
             className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
+          >
+            <option value='' disabled>Select Category</option>
+            {categories.map((cat, index) => (
+              <option key={index} value={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Shop Name</label>
@@ -136,24 +159,6 @@ const EditInventory = () => {
             ))}
           </select>
         </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Sales</label>
-          <input
-            type='text'
-            value={Sales}
-            onChange={(e) => setSales(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Quantity</label>
-          <input
-            type='text'
-            value={Quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
-          />
-        </div>
         <button className='p-2 bg-sky-300 m-8' onClick={InventoryEdit}>
           Save
         </button>
@@ -162,4 +167,4 @@ const EditInventory = () => {
   );
 }
 
-export default EditInventory;  
+export default EditInventory;

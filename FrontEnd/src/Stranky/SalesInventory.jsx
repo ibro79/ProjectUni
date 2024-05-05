@@ -33,7 +33,7 @@ const SalesInventory = () => {
       .put(`http://localhost:5555/inventory/${id}`, data)
       .then(() => {
         setLoading(false);
-        navigate('/');
+        navigate('/inventory');
       })
       .catch((error) => {
         setLoading(false);
