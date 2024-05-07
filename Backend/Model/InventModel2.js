@@ -26,7 +26,7 @@ const inventSchema2 = mongoose.Schema(
       type: Number,
       default: 0, 
     },
-    SalesInTotal: {
+    SalesInTotal: { 
       type: Number,
       default: 0, 
     },
@@ -35,17 +35,12 @@ const inventSchema2 = mongoose.Schema(
       default: 0, 
     },
     ShopName: { type: String, required: true }, // Add ShopName
-    
+
     CreatedTime: {
-      type: String,
-      required: true,
+      type: Date,
+      default: Date.now, // Set default value to current date and time
     }
   },
-
-  
-  {
-    timestamps: true,
-  }
 );
 
 export const Inventura2 = mongoose.model("Inventura2", inventSchema2);

@@ -1,74 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Spinner from '../components/Spinner';
 
 const Report = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [reportData, setReportData] = useState([]);
-
-  const fetchData = async () => {
-    try {
-      const fromDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 0, 0, 0);
-      const toDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 23, 59, 59);
-
-      const response = await axios.get(`http://localhost:5555/inventory?fromDate=${fromDate.toISOString()}&toDate=${toDate.toISOString()}`);
-
-      if (Array.isArray(response.data.data)) {
-        setReportData(response.data.data);
-      } else {
-        console.error('Response data is not an array:', response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching report data:', error);
-    }
-  };
+  const [loading, setLoading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
 
   useEffect(() => {
-    fetchData();
+    if (selectedDate) {
+      setLoading(true);
+      const url = `http://localhost:5555/inventory/report/${selectedDate}`;
+      console.log("Request URL:", url); // Log the request URL
+      axios.get(url)
+        .then((response) => {
+          console.log("Response Data:", response.data); // Log the response data
+          setReportData(response.data.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log("Error:", error); // Log any errors
+          setLoading(false);
+        });
+    }
   }, [selectedDate]);
 
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
+
   return (
-    <div className="p-4">
-      <h1 className="text-3xl mb-4">Inventory Report</h1>
-      <div className="flex items-center mb-4">
-        <label htmlFor="datePicker" className="mr-4 text-gray-500">Select Date:</label>
-        <input
-          type="date"
-          id="datePicker"
-          value={selectedDate.toISOString().split('T')[0]}
-          onChange={(e) => setSelectedDate(new Date(e.target.value))}
-          className="border-2 border-gray-500 px-4 py-2"
-        />
-      </div>
+    <div className='p-4'>
+      <h1 className='text-3xl my-8'>Inventory Report</h1>
       <div>
-        <h2 className="text-2xl mb-2">Report for {selectedDate.toDateString()}</h2>
-        <ul>
-          {reportData.map((item, index) => (
-            <li key={index} className="border-b-2 border-gray-300 py-2">
-              <div>
-                <span className="font-bold">SKU:</span> {item.Sku}
-              </div>
-              <div>
-                <span className="font-bold">Brand:</span> {item.Brand}
-              </div>
-              <div>
-                <span className="font-bold">Price:</span> {item.Price}
-              </div>
-              <div>
-                <span className="font-bold">Quantity:</span> {item.Quantity}
-              </div>
-              <div>
-                <span className="font-bold">Sales:</span> {item.Sales}
-              </div>
-              <div>
-                <span className="font-bold">Category:</span> {item.Category}
-              </div>
-              <div>
-                <span className="font-bold">Shop Name:</span> {item.ShopName}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <label htmlFor='dateFilter' className='mr-2'>Select Date:</label>
+        <input type='date' id='dateFilter' value={selectedDate} onChange={handleDateChange} />
       </div>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <table className='w-full border-separate border-spacing-2'>
+          <thead>
+            <tr>
+              <th>Sku</th>
+              <th>Brand</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              {/* Add more table headers as needed */}
+            </tr>
+          </thead>
+          <tbody>
+            {reportData.map((item, index) => (
+              <tr key={item._id}>
+                <td>{item.Sku}</td>
+                <td>{item.Brand}</td>
+                <td>{item.Price}</td>
+                <td>{item.Quantity}</td>
+                {/* Add more columns as needed */}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

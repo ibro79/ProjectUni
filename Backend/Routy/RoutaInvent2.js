@@ -4,69 +4,37 @@ import { Shops } from "../Model/ShopsModel.js";
 
 const router = express.Router();
 
-// POST route to create new inventory items
 router.post("/", async (request, response) => {
   try {
-    if (!request.body.Sku || !request.body.Brand || !request.body.Price || !request.body.Quantity || !request.body.Category ) {
-      return response.status(400).send({
-        message: "Please fill in all fields",
-      });
-    }
-
-    // Check if the shop name exists
     const shop = await Shops.findOne({ ShopName: request.body.ShopName });
     if (!shop) {
       return response.status(400).send({
         message: "Invalid ShopName",
       });
     }
-
-    // Calculate the TotalQuantity
-    const TotalQuantity = (request.body.Quantity || 0) - (request.body.Sales || 0);
-
-    const NewInventory = {
-      Sku: request.body.Sku,
-      Brand: request.body.Brand,
-      Price: request.body.Price,
-      Quantity: request.body.Quantity,
-      Category: request.body.Category,
-      ShopName: request.body.ShopName,
-      TotalQuantity: TotalQuantity,
-      SalesInTotal: request.body.Sales || 0,
-      CreatedTime: request.body.CreatedTime,
-    };
-
-    const newinventura = await Inventura2.create(NewInventory);
-
-    return response.status(201).send(newinventura);
+    // Removed CreatedTime from request.body, it will be added automatically
+    const newInventory = await Inventura2.create(request.body);
+    return response.status(201).json(newInventory);
   } catch (error) {
     console.log(error.message);
     response.status(500).send({ message: error.message });
   }
 });
 
-// GET route to fetch inventory items
 router.get("/", async (request, response) => {
   try {
-    const { shop } = request.query;
-    const filter = shop ? { ShopName: shop } : {}; // Apply filter if shop parameter is provided
+    const { shop, startDate, endDate } = request.query;
+    let filter = {}; // Initialize an empty filter object
 
-    const inventura = await Inventura2.find(filter);
+    // Add shop filter if shop parameter is provided
+    if (shop) {
+      filter.ShopName = shop;
+    }
 
-    return response.status(200).json({
-      count: inventura.length,
-      data: inventura,
-    });
-  } catch (error) {
-    console.log(error.message);
-    response.status(500).send({ message: error.message });
-  }
-});
-// GET route to fetch inventory items
-router.get("/filterbytime", async (request, response) => {
-  try {
-    const { Time } = request.query;
-    const filter =  { CreatedTime: Time }; // Apply filter if shop parameter is provided
+    // Add date filters if startDate and endDate are provided
+    if (startDate && endDate) {
+      filter.CreatedTime = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    }
 
     const inventura = await Inventura2.find(filter);
 
@@ -93,7 +61,29 @@ router.get("/:id", async (request, response) => {
     response.status(500).send({ message: error.message });
   }
 });
+// New route to fetch inventory items created on a selected day
+router.get("/report/:date", async (request, response) => {
+  try {
+    const { date } = request.params;
+    const selectedDate = new Date(date);
 
+    // Get the start and end of the selected day
+    const startOfDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+    const endOfDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1);
+
+    const inventura = await Inventura2.find({
+      CreatedTime: { $gte: startOfDay, $lt: endOfDay } // Filter by CreatedTime within the selected day
+    }).sort({ Sku: 1 }); // Sort by SKU
+
+    return response.status(200).json({
+      count: inventura.length,
+      data: inventura,
+    });
+  } catch (error) {
+    console.log(error.message);
+    response.status(500).send({ message: error.message });
+  }
+});
 // PUT route to update inventory item
 router.put("/:id", async (request, response) => {
   try {
