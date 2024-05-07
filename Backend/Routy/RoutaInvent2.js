@@ -6,15 +6,35 @@ const router = express.Router();
 
 router.post("/", async (request, response) => {
   try {
+    if (!request.body.Sku || !request.body.Brand || !request.body.Price || !request.body.Quantity || !request.body.Category ) {
+      return response.status(400).send({
+        message: "Please fill in all fields",
+      });
+    }
+
     const shop = await Shops.findOne({ ShopName: request.body.ShopName });
     if (!shop) {
       return response.status(400).send({
         message: "Invalid ShopName",
       });
     }
-  
-    const newInventory = await Inventura2.create(request.body);
-    return response.status(201).json(newInventory);
+
+    const TotalQuantity = (request.body.Quantity || 0) - (request.body.Sales || 0);
+
+    const NewInventory = {
+      Sku: request.body.Sku,
+      Brand: request.body.Brand,
+      Price: request.body.Price,
+      Quantity: request.body.Quantity,
+      Category: request.body.Category,
+      ShopName: request.body.ShopName,
+      TotalQuantity: TotalQuantity,
+      SalesInTotal: request.body.Sales || 0,
+    };
+
+    const newinventura = await Inventura2.create(NewInventory);
+
+    return response.status(201).send(newinventura);
   } catch (error) {
     console.log(error.message);
     response.status(500).send({ message: error.message });
