@@ -34,11 +34,11 @@ const inventSchema2 = mongoose.Schema(
       type: Number,
       default: 0, 
     },
-    ShopName: { type: String, required: true }, // Add ShopName
+    ShopName: { type: String, required: true }, 
 
     CreatedTime: {
       type: Date,
-      default: Date.now, // Set default value to current date and time
+      default: Date.now, 
     }
   },
 );

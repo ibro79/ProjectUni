@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import BackButton from '../components/BackButton';
-import Spinner from '../components/Spinner';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,7 +16,6 @@ const CreateInventory = () => {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch shop names from the backend on component mount
   useEffect(() => {
     const fetchShopNames = async () => {
       try {
@@ -75,43 +73,43 @@ const CreateInventory = () => {
 
   return (
     <div className='p-4'>
-      <BackButton />
+      
       <h1 className='text-3xl my-4'>New Inventory</h1>
-      {loading ? <Spinner /> : ''}
-      <div className='flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto'>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Sku</label>
+      <BackButton />
+      <div className='flex flex-col items-center border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto'>
+        <div className='my-4 w-full flex'>
+          <label className='text-xl mr-4 text-gray-500 w-1/4'>Sku</label>
           <input
             type='text'
             value={Sku}
             onChange={(e) => setSku(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
+            className='border-2 border-gray-500 px-4 py-2 w-3/4'
           />
         </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Brand</label>
+        <div className='my-4 w-full flex'>
+          <label className='text-xl mr-4 text-gray-500 w-1/4'>Brand</label>
           <input
             type='text'
             value={Brand}
             onChange={(e) => setBrand(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
+            className='border-2 border-gray-500 px-4 py-2 w-3/4'
           />
         </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Price</label>
+        <div className='my-4 w-full flex'>
+          <label className='text-xl mr-4 text-gray-500 w-1/4'>Price</label>
           <input
             type='text'
             value={Price}
             onChange={(e) => setPrice(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
+            className='border-2 border-gray-500 px-4 py-2 w-3/4'
           />
         </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Category</label>
+        <div className='my-4 w-full flex'>
+          <label className='text-xl mr-4 text-gray-500 w-1/4'>Category</label>
           <select
             value={Category}
             onChange={(e) => setCategory(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
+            className='border-2 border-gray-500 px-4 py-2 w-3/4'
           >
             <option value='' disabled>Select Category</option>
             {categories.map((cat, index) => (
@@ -119,12 +117,12 @@ const CreateInventory = () => {
             ))}
           </select>
         </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Shop Name</label>
+        <div className='my-4 w-full flex'>
+          <label className='text-xl mr-4 text-gray-500 w-1/4'>Shop Name</label>
           <select
             value={ShopName}
             onChange={(e) => setShopName(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
+            className='border-2 border-gray-500 px-4 py-2 w-3/4'
           >
             <option value='' disabled>Select Shop</option>
             {shopNames.map((shopName, index) => (
@@ -132,22 +130,22 @@ const CreateInventory = () => {
             ))}
           </select>
         </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Sales</label>
+        <div className='my-4 w-full flex'>
+          <label className='text-xl mr-4 text-gray-500 w-1/4'>Sales</label>
           <input
             type='text'
             value={Sales}
             onChange={(e) => setSales(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
+            className='border-2 border-gray-500 px-4 py-2 w-3/4'
           />
         </div>
-        <div className='my-4'>
-          <label className='text-xl mr-4 text-gray-500'>Quantity</label>
+        <div className='my-4 w-full flex'>
+          <label className='text-xl mr-4 text-gray-500 w-1/4'>Quantity</label>
           <input
             type='text'
             value={Quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className='border-2 border-gray-500 px-4 py-2 w-full'
+            className='border-2 border-gray-500 px-4 py-2 w-3/4'
           />
         </div>
         <button className='p-2 bg-sky-300 m-8' onClick={InventorySave}>

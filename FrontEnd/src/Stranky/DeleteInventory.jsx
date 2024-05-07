@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import BackButton from '../components/BackButton';
-import Spinner from '../components/Spinner';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -24,9 +23,8 @@ const DeleteInventory = () => {
   };
   return (
     <div className='p-4'>
-      <BackButton />
       <h1 className='text-3xl my-4'>Delete Inventory</h1>
-      {loading ?  <Spinner /> : "" }
+      <BackButton />
         <div className = "flex flex-col items-center border-2 border-sky-400 rounded-x1 w-[600px] p-8 mx-auto">
           <h3 className= "text-2x1">Are you sure you want to delete this inventory?</h3>
           

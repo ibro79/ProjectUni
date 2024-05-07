@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import BackButton from '../components/BackButton';
-import Spinner from '../components/Spinner';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -14,7 +13,7 @@ const AddQuantityInventory = () => {
     setLoading(true);
     axios.get(`http://localhost:5555/inventory/${id}`)
       .then((response) => {
-        setQuantity(response.data.Quantity); // Make sure to access the correct property
+        setQuantity(response.data.Quantity); 
         setLoading(false);
       })
       .catch((error) => {
@@ -27,7 +26,7 @@ const AddQuantityInventory = () => {
   const handleSave = () => {
     setLoading(true);
     axios
-      .put(`http://localhost:5555/inventory/${id}`, { Quantity: quantity }) // Pass the correct property name
+      .put(`http://localhost:5555/inventory/${id}`, { Quantity: quantity }) 
       .then(() => {
         setLoading(false);
         navigate('/inventory');
@@ -41,9 +40,8 @@ const AddQuantityInventory = () => {
 
   return (
     <div className='p-4'>
-      <BackButton />
       <h1 className='text-3xl my-4'>Add Quantity</h1>
-      {loading ? <Spinner /> : ''}
+      <BackButton />
       <div className='flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto'>
         <div className='my-4'>
           <label className='text-xl mr-4 text-gray-500'>Quantity</label>
